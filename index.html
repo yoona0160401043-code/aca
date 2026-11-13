@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>粵語詞彙大挑戰 Cantonese Word Challenge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Noto+Sans+HK:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FFF8EC; --ink:#2B2340; --muted:#6E6787; --card:#FFFFFF;
+    --red:#FF5A5F; --orange:#FF9F1C; --yellow:#FFD23F; --green:#2EC4B6; --blue:#3A86FF; --purple:#8338EC;
+    --ok:#22B07D; --bad:#F2545B; --line:#EDE3D1;
+    --shadow:0 6px 0 rgba(43,35,64,.12);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans HK","Baloo 2",system-ui,sans-serif;}
+  body{min-height:100vh;background-image:radial-gradient(circle at 10% 10%,#FFE9C7 0 120px,transparent 121px),radial-gradient(circle at 92% 85%,#DDF3F0 0 160px,transparent 161px);background-attachment:fixed}
+  button{font-family:inherit;cursor:pointer;border:none}
+  .wrap{max-width:1000px;margin:0 auto;padding:20px 18px 40px}
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+  .logo{font-family:"Baloo 2","Noto Sans HK";font-weight:800;font-size:clamp(24px,4vw,36px);line-height:1.1}
+  .logo span{display:block;font-size:.5em;color:var(--muted);font-weight:700}
+  .home-btn{background:var(--card);border-radius:14px;padding:10px 16px;font-weight:700;box-shadow:var(--shadow);font-size:16px}
+  .panel{background:var(--card);border-radius:24px;padding:22px;box-shadow:var(--shadow);margin-bottom:18px}
+  h2{margin:0 0 12px;font-size:20px}
+  h2 small{color:var(--muted);font-weight:400;font-size:14px;margin-left:6px}
+  .chips{display:flex;flex-wrap:wrap;gap:10px}
+  .chip{padding:10px 16px;border-radius:999px;background:#F4EEE3;font-weight:700;font-size:17px;border:3px solid transparent;transition:.15s}
+  .chip.on{background:#FFF1CC;border-color:var(--orange)}
+  .chip .em{margin-right:6px}
+  .modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+  .mode{border-radius:20px;padding:18px;color:#fff;text-align:left;box-shadow:var(--shadow);transition:transform .12s}
+  .mode:hover{transform:translateY(-3px)}
+  .mode .big{font-size:38px}
+  .mode b{display:block;font-size:21px;margin-top:4px}
+  .mode i{font-style:normal;opacity:.92;font-size:14px}
+  .m1{background:var(--purple)} .m2{background:var(--blue)} .m3{background:var(--green)} .m4{background:var(--orange)} .m5{background:var(--red)}
+  .opts{display:flex;flex-wrap:wrap;gap:18px;align-items:center}
+  .tog{display:flex;align-items:center;gap:8px;font-weight:700;font-size:16px;cursor:pointer;user-select:none}
+  .tog input{width:22px;height:22px;accent-color:var(--orange)}
+  select{font-family:inherit;font-size:16px;padding:6px 10px;border-radius:10px;border:2px solid var(--line);font-weight:700}
+  .notice{background:#FFF1CC;border-radius:14px;padding:10px 14px;font-size:14px;margin-top:12px;display:none}
+  .notice.show{display:block}
+  /* game */
+  .hud{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+  .pill{background:var(--card);border-radius:999px;padding:8px 16px;font-weight:800;box-shadow:var(--shadow);font-size:17px}
+  .teams{display:flex;gap:10px}
+  .team{background:var(--card);border-radius:14px;padding:6px 14px;font-weight:800;box-shadow:var(--shadow);border:3px solid transparent;font-size:17px}
+  .team.turn{border-color:var(--orange)}
+  .progress{height:12px;background:#EFE6D6;border-radius:99px;overflow:hidden;margin-bottom:16px}
+  .progress div{height:100%;background:linear-gradient(90deg,var(--orange),var(--red));width:0;transition:width .3s}
+  .prompt{text-align:center;padding:26px 16px 22px}
+  .prompt .q{color:var(--muted);font-weight:700;font-size:17px;margin-bottom:8px}
+  .prompt .word{font-size:clamp(56px,11vw,96px);font-weight:900;line-height:1.1}
+  .prompt .jp{font-family:"Baloo 2";font-size:clamp(22px,4vw,30px);color:var(--purple);font-weight:700}
+  .prompt .en{color:var(--muted);font-size:18px}
+  .prompt .pic{font-size:clamp(90px,16vw,140px);line-height:1.1}
+  .speak{background:var(--purple);color:#fff;border-radius:999px;padding:14px 26px;font-size:20px;font-weight:800;box-shadow:var(--shadow);margin-top:10px}
+  .speak.huge{font-size:28px;padding:22px 40px}
+  .speak.small{font-size:15px;padding:8px 14px;margin:0}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  .ans{background:var(--card);border-radius:20px;padding:18px 10px;box-shadow:var(--shadow);border:4px solid transparent;min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:transform .1s}
+  .ans:hover:not(:disabled){transform:scale(1.02)}
+  .ans .pic{font-size:clamp(56px,10vw,84px);line-height:1}
+  .ans .w{font-size:clamp(30px,6vw,46px);font-weight:900}
+  .ans .j{font-family:"Baloo 2";color:var(--purple);font-weight:700;font-size:20px}
+  .ans.ok{border-color:var(--ok);background:#E5F8F0}
+  .ans.bad{border-color:var(--bad);background:#FDE8E9;animation:shake .35s}
+  .ans:disabled{cursor:default}
+  @keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .feedback{text-align:center;font-size:24px;font-weight:900;min-height:40px;margin-top:14px}
+  .next{display:none;margin:12px auto 0;background:var(--ink);color:#fff;border-radius:16px;padding:14px 34px;font-size:20px;font-weight:800;box-shadow:var(--shadow)}
+  .next.show{display:block}
+  /* memory */
+  .mem{display:grid;gap:12px;grid-template-columns:repeat(4,1fr)}
+  .card{aspect-ratio:1/1;perspective:800px;background:none;padding:0}
+  .card .in{position:relative;width:100%;height:100%;transition:transform .45s;transform-style:preserve-3d}
+  .card.flip .in,.card.done .in{transform:rotateY(180deg)}
+  .face{position:absolute;inset:0;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;backface-visibility:hidden;box-shadow:var(--shadow)}
+  .front{background:linear-gradient(135deg,var(--orange),var(--red));color:#fff;font-size:40px;font-weight:900}
+  .back{background:var(--card);transform:rotateY(180deg);border:4px solid transparent}
+  .card.done .back{border-color:var(--ok);background:#E5F8F0}
+  .back .pic{font-size:clamp(40px,8vw,64px)}
+  .back .w{font-size:clamp(24px,5vw,38px);font-weight:900}
+  .back .j{font-family:"Baloo 2";color:var(--purple);font-size:15px;font-weight:700}
+  /* list */
+  .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+  .item{background:var(--card);border-radius:18px;padding:14px;text-align:center;box-shadow:var(--shadow)}
+  .item .pic{font-size:52px}
+  .item .w{font-size:32px;font-weight:900}
+  .item .j{font-family:"Baloo 2";color:var(--purple);font-weight:700;font-size:18px}
+  .item .e{color:var(--muted);font-size:14px;margin-bottom:8px}
+  .item button{background:#F1E8FF;color:var(--purple);border-radius:99px;padding:6px 14px;font-weight:800}
+  .cat-title{margin:18px 0 10px;font-size:22px}
+  /* end */
+  .end{text-align:center;padding:30px 16px}
+  .stars{font-size:64px;letter-spacing:6px}
+  .end .score{font-size:42px;font-weight:900;margin:8px 0}
+  .end .btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+  .end .btns button{border-radius:16px;padding:14px 26px;font-size:18px;font-weight:800;box-shadow:var(--shadow)}
+  .review{margin-top:20px;text-align:left}
+  .review h3{font-size:18px}
+  .review .list{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  .confetti{position:fixed;top:-20px;font-size:26px;pointer-events:none;animation:fall linear forwards;z-index:50}
+  @keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+  .hide{display:none!important}
+  @media (max-width:560px){.mem{grid-template-columns:repeat(3,1fr)}.grid{gap:10px}.panel{padding:16px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">粵語詞彙大挑戰 🎯<span>Cantonese Word Challenge</span></div>
+    <button class="home-btn hide" id="homeBtn">🏠 主頁 Home</button>
+  </header>
+
+  <!-- HOME -->
+  <section id="home">
+    <div class="panel">
+      <h2>1. 揀主題 <small>Choose topics</small></h2>
+      <div class="chips" id="cats"></div>
+    </div>
+    <div class="panel">
+      <h2>2. 設定 <small>Settings</small></h2>
+      <div class="opts">
+        <label class="tog"><input type="checkbox" id="optJp" checked> 顯示粵拼 Jyutping</label>
+        <label class="tog"><input type="checkbox" id="optEn" checked> 顯示英文 English</label>
+        <label class="tog"><input type="checkbox" id="optAuto" checked> 自動讀出 Auto-speak</label>
+        <label class="tog"><input type="checkbox" id="optTeam"> 分隊比賽 2 Teams</label>
+        <label class="tog">題數 Questions
+          <select id="optN"><option>5</option><option selected>10</option><option>15</option><option>20</option></select>
+        </label>
+      </div>
+      <div class="notice" id="voiceNote">🔈 呢部機搵唔到粵語語音，「聽聲音」可能讀唔到或者讀成普通話。建議用 iPad / iPhone、Android 或者 Chrome (Windows 已安裝「中文(香港)」語音)。<br>No Cantonese voice found on this device — the listening mode may not work properly.</div>
+    </div>
+    <div class="panel">
+      <h2>3. 揀玩法 <small>Choose a game</small></h2>
+      <div class="modes">
+        <button class="mode m1" data-mode="listen"><div class="big">👂</div><b>聽聲音，揀圖</b><i>Listen &amp; pick the picture</i></button>
+        <button class="mode m2" data-mode="read"><div class="big">📖</div><b>睇字，揀圖</b><i>Read the word, pick the picture</i></button>
+        <button class="mode m3" data-mode="pic"><div class="big">🖼️</div><b>睇圖，揀字</b><i>See the picture, pick the word</i></button>
+        <button class="mode m4" data-mode="memory"><div class="big">🃏</div><b>翻牌配對</b><i>Memory match: picture ↔ word</i></button>
+        <button class="mode m5" data-mode="list"><div class="big">📚</div><b>詞語表</b><i>Word list — learn first</i></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="hide">
+    <div class="hud">
+      <div class="pill" id="qCount">1 / 10</div>
+      <div class="teams hide" id="teamBox">
+        <div class="team" id="tA">🔴 A隊: <span>0</span></div>
+        <div class="team" id="tB">🔵 B隊: <span>0</span></div>
+      </div>
+      <div class="pill" id="scoreBox">⭐ 0 &nbsp; 🔥 0</div>
+    </div>
+    <div class="progress"><div id="bar"></div></div>
+    <div class="panel prompt" id="prompt"></div>
+    <div class="grid" id="answers"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="next" id="nextBtn">下一題 Next ➜</button>
+  </section>
+
+  <!-- MEMORY -->
+  <section id="memory" class="hide">
+    <div class="hud">
+      <div class="pill" id="memPairs">配對 0 / 6</div>
+      <div class="teams hide" id="memTeamBox">
+        <div class="team" id="mA">🔴 A隊: <span>0</span></div>
+        <div class="team" id="mB">🔵 B隊: <span>0</span></div>
+      </div>
+      <div class="pill" id="memMoves">步數 Moves: 0</div>
+    </div>
+    <div class="mem" id="memGrid"></div>
+  </section>
+
+  <!-- LIST -->
+  <section id="list" class="hide"></section>
+
+  <!-- END -->
+  <section id="end" class="hide"><div class="panel end" id="endBox"></div></section>
+</div>
+
+<script>
+const CATS = [
+  {id:"food", name:"食物", en:"Food", em:"🍎", words:[
+    ["蘋果","ping4 gwo2","apple","🍎"],["香蕉","hoeng1 ziu1","banana","🍌"],["西瓜","sai1 gwaa1","watermelon","🍉"],
+    ["雪糕","syut3 gou1","ice cream","🍦"],["麵包","min6 baau1","bread","🍞"],["飯","faan6","rice","🍚"],
+    ["牛奶","ngau4 naai5","milk","🥛"],["橙","caang2","orange","🍊"]]},
+  {id:"animal", name:"動物", en:"Animals", em:"🐶", words:[
+    ["貓","maau1","cat","🐱"],["狗","gau2","dog","🐶"],["雀仔","zoek3 zai2","bird","🐦"],["兔仔","tou3 zai2","rabbit","🐰"],
+    ["豬","zyu1","pig","🐷"],["大笨象","daai6 ban6 zoeng6","elephant","🐘"],["馬騮","maa5 lau1","monkey","🐒"],["老虎","lou5 fu2","tiger","🐯"]]},
+  {id:"colour", name:"顏色", en:"Colours", em:"🎨", words:[
+    ["紅色","hung4 sik1","red","🔴"],["藍色","laam4 sik1","blue","🔵"],["黃色","wong4 sik1","yellow","🟡"],["綠色","luk6 sik1","green","🟢"],
+    ["黑色","hak1 sik1","black","⚫"],["白色","baak6 sik1","white","⚪"],["紫色","zi2 sik1","purple","🟣"],["橙色","caang2 sik1","orange","🟠"]]},
+  {id:"number", name:"數字", en:"Numbers", em:"🔢", words:[
+    ["一","jat1","one","1️⃣"],["二","ji6","two","2️⃣"],["三","saam1","three","3️⃣"],["四","sei3","four","4️⃣"],["五","ng5","five","5️⃣"],
+    ["六","luk6","six","6️⃣"],["七","cat1","seven","7️⃣"],["八","baat3","eight","8️⃣"],["九","gau2","nine","9️⃣"],["十","sap6","ten","🔟"]]},
+  {id:"body", name:"身體", en:"Body", em:"👀", words:[
+    ["眼","ngaan5","eye","👁️"],["耳仔","ji5 zai2","ear","👂"],["鼻","bei6","nose","👃"],["口","hau2","mouth","👄"],
+    ["手","sau2","hand","✋"],["腳","goek3","foot / leg","🦶"],["頭髮","tau4 faat3","hair","💇"]]},
+  {id:"transport", name:"交通", en:"Transport", em:"🚌", words:[
+    ["巴士","baa1 si2","bus","🚌"],["的士","dik1 si2","taxi","🚕"],["飛機","fei1 gei1","aeroplane","✈️"],["單車","daan1 ce1","bicycle","🚲"],
+    ["船","syun4","boat / ship","🚢"],["火車","fo2 ce1","train","🚆"],["電車","din6 ce1","tram (ding ding)","🚋"]]}
+];
+
+const $ = id => document.getElementById(id);
+const S = {cats:new Set(["food","animal"]), mode:null, qs:[], i:0, score:0, streak:0, best:0, wrong:[], team:0, teamScore:[0,0], locked:false};
+let voice = null;
+
+/* ---------- speech ---------- */
+function pickVoice(){
+  const vs = speechSynthesis.getVoices();
+  voice = vs.find(v=>/zh[-_]HK/i.test(v.lang)) || vs.find(v=>/yue/i.test(v.lang)) || vs.find(v=>/cantonese|粵|廣東/i.test(v.name)) || null;
+  $("voiceNote").classList.toggle("show", vs.length>0 && !voice);
+}
+if ("speechSynthesis" in window){ pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; setTimeout(pickVoice,800); }
+else { $("voiceNote").classList.add("show"); }
+function say(text){
+  try{
+    if(!("speechSynthesis" in window)) return;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = voice ? voice.lang : "zh-HK"; if(voice) u.voice = voice; u.rate = .8;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+/* ---------- home ---------- */
+function renderCats(){
+  $("cats").innerHTML = CATS.map(c=>`<button class="chip ${S.cats.has(c.id)?'on':''}" data-c="${c.id}"><span class="em">${c.em}</span>${c.name} ${c.en}</button>`).join("")
+   + `<button class="chip" data-c="__all">✨ 全部 All</button>`;
+}
+$("cats").onclick = e=>{
+  const b = e.target.closest(".chip"); if(!b) return;
+  const c = b.dataset.c;
+  if(c==="__all"){ if(S.cats.size===CATS.length) S.cats=new Set([CATS[0].id]); else S.cats=new Set(CATS.map(x=>x.id)); }
+  else if(S.cats.has(c)){ if(S.cats.size>1) S.cats.delete(c); } else S.cats.add(c);
+  renderCats();
+};
+document.querySelectorAll(".mode").forEach(b=>b.onclick=()=>start(b.dataset.mode));
+$("homeBtn").onclick = goHome;
+
+function show(id){ ["home","quiz","memory","list","end"].forEach(s=>$(s).classList.toggle("hide",s!==id)); $("homeBtn").classList.toggle("hide",id==="home"); window.scrollTo(0,0); }
+function goHome(){ try{speechSynthesis.cancel()}catch(e){} show("home"); }
+const pool = ()=>CATS.filter(c=>S.cats.has(c.id)).flatMap(c=>c.words.map(w=>({w:w[0],j:w[1],e:w[2],p:w[3],cat:c.id})));
+const shuffle = a=>{a=[...a];for(let i=a.length-1;i>0;i--){const k=Math.floor(Math.random()*(i+1));[a[i],a[k]]=[a[k],a[i]];}return a;};
+const opt = id=>$(id).checked;
+const teamOn = ()=>opt("optTeam");
+
+function start(mode){
+  S.mode = mode;
+  if(mode==="list") return renderList();
+  if(mode==="memory") return startMemory();
+  const P = pool();
+  const n = Math.min(+$("optN").value, P.length*2);
+  let order = []; while(order.length<n) order = order.concat(shuffle(P));
+  order = order.slice(0,n);
+  // avoid same word twice in a row
+  for(let i=1;i<order.length;i++) if(order[i].w===order[i-1].w && i+1<order.length) [order[i],order[i+1]]=[order[i+1],order[i]];
+  S.qs = order.map(t=>{
+    const same = P.filter(x=>x.w!==t.w && x.cat===t.cat), other = P.filter(x=>x.w!==t.w && x.cat!==t.cat);
+    const dist = shuffle(same).concat(shuffle(other)).slice(0,3);
+    return {t, opts:shuffle([t,...dist])};
+  });
+  Object.assign(S,{i:0,score:0,streak:0,best:0,wrong:[],team:0,teamScore:[0,0]});
+  $("teamBox").classList.toggle("hide",!teamOn());
+  show("quiz"); renderQ();
+}
+
+/* ---------- quiz ---------- */
+function wordBits(x, big){
+  return `${opt("optJp")?`<div class="${big?'jp':'j'}">${x.j}</div>`:""}${big&&opt("optEn")?`<div class="en">${x.e}</div>`:""}`;
+}
+function renderQ(){
+  S.locked=false;
+  const {t,opts} = S.qs[S.i];
+  $("qCount").textContent = `第 ${S.i+1} 題 / ${S.qs.length}`;
+  $("bar").style.width = (S.i/S.qs.length*100)+"%";
+  updateHud();
+  let p="";
+  if(S.mode==="listen") p = `<div class="q">聽吓係咩？ Listen — what is it?</div><button class="speak huge" id="play">🔊 再聽 Play</button>`;
+  if(S.mode==="read")   p = `<div class="q">邊幅圖係呢個字？ Which picture matches?</div><div class="word">${t.w}</div>${wordBits(t,true)}<button class="speak small" id="play" style="margin-top:10px">🔊</button>`;
+  if(S.mode==="pic")    p = `<div class="q">呢個係咩？ What is this?</div><div class="pic">${t.p}</div>${opt("optEn")?`<div class="en">${t.e}</div>`:""}`;
+  $("prompt").innerHTML = p;
+  if($("play")) $("play").onclick = ()=>say(t.w);
+  $("answers").innerHTML = opts.map((o,k)=> S.mode==="pic"
+     ? `<button class="ans" data-k="${k}"><div class="w">${o.w}</div>${wordBits(o,false)}</button>`
+     : `<button class="ans" data-k="${k}"><div class="pic">${o.p}</div>${opt("optEn")&&S.mode!=="listen"?`<div class="j" style="color:var(--muted)">${o.e}</div>`:""}</button>`).join("");
+  $("answers").querySelectorAll(".ans").forEach(b=>b.onclick=()=>answer(+b.dataset.k,b));
+  $("feedback").textContent = teamOn()? (S.team===0?"🔴 A隊作答 Team A's turn":"🔵 B隊作答 Team B's turn") : "";
+  $("nextBtn").classList.remove("show");
+  if(S.mode==="listen" || (S.mode==="read" && opt("optAuto"))) setTimeout(()=>say(t.w),350);
+}
+function updateHud(){
+  $("scoreBox").innerHTML = `⭐ ${S.score} &nbsp; 🔥 ${S.streak}`;
+  $("tA").querySelector("span").textContent=S.teamScore[0]; $("tB").querySelector("span").textContent=S.teamScore[1];
+  $("tA").classList.toggle("turn",S.team===0); $("tB").classList.toggle("turn",S.team===1);
+}
+const PRAISE = ["好叻呀！ Great!","正呀！ Awesome!","答啱咗！ Correct!","勁呀！ Amazing!","好嘢！ Well done!"];
+function answer(k,btn){
+  if(S.locked) return; S.locked=true;
+  const q = S.qs[S.i], chosen = q.opts[k], ok = chosen.w===q.t.w;
+  const btns = $("answers").querySelectorAll(".ans");
+  btns.forEach((b,i)=>{ b.disabled=true; if(q.opts[i].w===q.t.w) b.classList.add("ok"); });
+  if(ok){ S.score++; S.streak++; S.best=Math.max(S.best,S.streak); if(teamOn()) S.teamScore[S.team]++;
+    $("feedback").innerHTML = `✅ ${PRAISE[Math.floor(Math.random()*PRAISE.length)]}`; if(S.streak%3===0) confetti(14); }
+  else { btn.classList.add("bad"); S.streak=0; S.wrong.push(q.t);
+    $("feedback").innerHTML = `❌ 唔緊要！係「${q.t.w}」${opt("optJp")?` <span style="font-family:'Baloo 2';color:var(--purple)">${q.t.j}</span>`:""}`; }
+  // reveal answer in prompt for listen mode
+  if(S.mode==="listen") $("prompt").insertAdjacentHTML("beforeend",`<div style="margin-top:12px"><div class="word" style="font-size:56px">${q.t.w}</div>${wordBits(q.t,true)}</div>`);
+  if(opt("optAuto") || S.mode==="pic") say(q.t.w);
+  updateHud();
+  $("nextBtn").textContent = S.i+1<S.qs.length ? "下一題 Next ➜" : "睇結果 Results 🏆";
+  $("nextBtn").classList.add("show");
+}
+$("nextBtn").onclick = ()=>{
+  S.i++; if(teamOn()) S.team = 1-S.team;
+  if(S.i<S.qs.length) renderQ(); else endQuiz();
+};
+function endQuiz(){
+  $("bar").style.width="100%";
+  const n=S.qs.length, r=S.score/n, stars = r>=.9?3:r>=.6?2:r>=.3?1:0;
+  let head;
+  if(teamOn()){
+    const [a,b]=S.teamScore;
+    head = `<div style="font-size:60px">🏆</div><div class="score">🔴 A隊 ${a} : ${b} B隊 🔵</div><div style="font-size:24px;font-weight:900">${a===b?"打和！ It's a draw!":(a>b?"🔴 A隊贏！ Team A wins!":"🔵 B隊贏！ Team B wins!")}</div>`;
+  } else {
+    head = `<div class="stars">${"⭐".repeat(stars)}${"☆".repeat(3-stars)}</div><div class="score">${S.score} / ${n}</div>
+      <div style="font-size:20px;font-weight:700">${stars===3?"超級叻！ Super star!":stars===2?"做得好！ Good job!":stars===1?"繼續努力！ Keep trying!":"再試吓！ Try again!"}</div>
+      <div style="color:var(--muted);margin-top:6px">最長連勝 Best streak: 🔥 ${S.best}</div>`;
+  }
+  const uniq = [...new Map(S.wrong.map(x=>[x.w,x])).values()];
+  const rev = uniq.length? `<div class="review"><h3>🔁 要再溫習 Words to practise</h3><div class="list">${uniq.map(itemCard).join("")}</div></div>` : "";
+  $("endBox").innerHTML = head + `<div class="btns"><button style="background:var(--orange);color:#fff" id="again">🔄 再玩 Play again</button><button style="background:#F4EEE3" id="toHome">🏠 主頁 Home</button></div>` + rev;
+  $("again").onclick=()=>start(S.mode); $("toHome").onclick=goHome;
+  bindSpeak($("endBox"));
+  show("end"); if(stars>=2 || teamOn()) confetti(40);
+}
+
+/* ---------- memory ---------- */
+let M = {};
+function startMemory(){
+  const P = shuffle(pool());
+  const pairs = Math.min(window.innerWidth<560?6:8, P.length);
+  const picks = P.slice(0,pairs);
+  const cards = shuffle(picks.flatMap((w,id)=>[{id,kind:"p",w},{id,kind:"w",w}]));
+  M = {cards, open:[], done:0, moves:0, pairs, busy:false, team:0, ts:[0,0]};
+  $("memTeamBox").classList.toggle("hide",!teamOn());
+  $("memGrid").innerHTML = cards.map((c,i)=>`<button class="card" data-i="${i}"><div class="in"><div class="face front">?</div><div class="face back">${
+    c.kind==="p" ? `<div class="pic">${c.w.p}</div>` : `<div class="w">${c.w.w}</div>${opt("optJp")?`<div class="j">${c.w.j}</div>`:""}`}</div></div></button>`).join("");
+  $("memGrid").querySelectorAll(".card").forEach(b=>b.onclick=()=>flip(+b.dataset.i,b));
+  memHud(); show("memory");
+}
+function memHud(){
+  $("memPairs").textContent = `配對 Pairs: ${M.done} / ${M.pairs}`;
+  $("memMoves").textContent = `步數 Moves: ${M.moves}`;
+  $("mA").querySelector("span").textContent=M.ts[0]; $("mB").querySelector("span").textContent=M.ts[1];
+  $("mA").classList.toggle("turn",M.team===0); $("mB").classList.toggle("turn",M.team===1);
+}
+function flip(i,el){
+  if(M.busy || el.classList.contains("flip") || el.classList.contains("done")) return;
+  el.classList.add("flip"); M.open.push([i,el]);
+  if(M.cards[i].kind==="w" && opt("optAuto")) say(M.cards[i].w.w);
+  if(M.open.length<2) return;
+  M.moves++; const [[a,ea],[b,eb]] = M.open; M.open=[];
+  if(M.cards[a].id===M.cards[b].id && M.cards[a].kind!==M.cards[b].kind){
+    ea.classList.add("done"); eb.classList.add("done"); M.done++; if(teamOn()) M.ts[M.team]++;
+    say(M.cards[a].w.w); memHud();
+    if(M.done===M.pairs) setTimeout(endMemory,900);
+  } else {
+    M.busy=true; setTimeout(()=>{ea.classList.remove("flip");eb.classList.remove("flip");M.busy=false; if(teamOn()) M.team=1-M.team; memHud();},1100);
+    memHud();
+  }
+}
+function endMemory(){
+  let head;
+  if(teamOn()){ const [a,b]=M.ts;
+    head=`<div style="font-size:60px">🏆</div><div class="score">🔴 A隊 ${a} : ${b} B隊 🔵</div><div style="font-size:24px;font-weight:900">${a===b?"打和！ It's a draw!":(a>b?"🔴 A隊贏！ Team A wins!":"🔵 B隊贏！ Team B wins!")}</div>`;
+  } else {
+    const r = M.moves/M.pairs, stars = r<=1.6?3:r<=2.4?2:1;
+    head=`<div class="stars">${"⭐".repeat(stars)}${"☆".repeat(3-stars)}</div><div class="score">全部配對完成！</div><div style="font-size:20px;font-weight:700">All matched in ${M.moves} moves 步</div>`;
+  }
+  const words = M.cards.filter(c=>c.kind==="w").map(c=>c.w);
+  $("endBox").innerHTML = head + `<div class="btns"><button style="background:var(--orange);color:#fff" id="again">🔄 再玩 Play again</button><button style="background:#F4EEE3" id="toHome">🏠 主頁 Home</button></div>
+    <div class="review"><h3>📚 今次嘅詞語 Words in this round</h3><div class="list">${words.map(itemCard).join("")}</div></div>`;
+  $("again").onclick=startMemory; $("toHome").onclick=goHome; bindSpeak($("endBox"));
+  show("end"); confetti(40);
+}
+
+/* ---------- list ---------- */
+function itemCard(x){ return `<div class="item"><div class="pic">${x.p}</div><div class="w">${x.w}</div>${opt("optJp")?`<div class="j">${x.j}</div>`:""}${opt("optEn")?`<div class="e">${x.e}</div>`:""}<button data-say="${x.w}">🔊 讀 Listen</button></div>`; }
+function bindSpeak(root){ root.querySelectorAll("[data-say]").forEach(b=>b.onclick=()=>say(b.dataset.say)); }
+function renderList(){
+  const html = CATS.filter(c=>S.cats.has(c.id)).map(c=>`<h2 class="cat-title">${c.em} ${c.name} <small>${c.en}</small></h2><div class="list">${
+     c.words.map(w=>itemCard({w:w[0],j:w[1],e:w[2],p:w[3]})).join("")}</div>`).join("");
+  $("list").innerHTML = html; bindSpeak($("list")); show("list");
+}
+
+/* ---------- fx ---------- */
+function confetti(n){
+  const em=["🎉","⭐","🎊","✨","💛"];
+  for(let i=0;i<n;i++){ const s=document.createElement("div"); s.className="confetti"; s.textContent=em[i%em.length];
+    s.style.left=Math.random()*100+"vw"; s.style.animationDuration=(1.6+Math.random()*1.6)+"s"; s.style.animationDelay=(Math.random()*.4)+"s";
+    document.body.appendChild(s); setTimeout(()=>s.remove(),3800); }
+}
+renderCats();
+</script>
+</body>
+</html>
